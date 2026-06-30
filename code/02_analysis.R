@@ -1048,12 +1048,15 @@ write.csv(fp, file.path(OUTDIR, "fig2_forest.csv"), row.names = FALSE)
 print(round(fp[, c("est", "se", "p", "lo", "hi", "irr")], 5))
 
 cat("\n--- Figure 2 data: marginal price slope across Gini (fixest NB) ---\n")
-bfe <- coef(M2_fe)
 Vm  <- vcov(M2_fe, vcov = "iid")
 Vc  <- vcov(M2_fe, cluster = ~iso3)
+cn  <- intersect(rownames(Vm), names(coef(M2_fe)))
+bfe <- coef(M2_fe)[cn]
+Vm  <- Vm[cn, cn, drop = FALSE]
+Vc  <- Vc[cn, cn, drop = FALSE]
 gini_grid <- seq(quantile(m$gini, .05, na.rm = TRUE), quantile(m$gini, .95, na.rm = TRUE), length.out = 60)
 gc_grid2  <- gini_grid - gini_mean
-gvec <- function(gc) { g <- setNames(rep(0, length(bfe)), names(bfe)); g["food_infl"] <- 1; g["food_infl2"] <- 2 * fp_med; g["fp_Gc"] <- gc; g }
+gvec <- function(gc) { g <- setNames(rep(0, length(cn)), cn); g["food_infl"] <- 1; g["food_infl2"] <- 2 * fp_med; g["fp_Gc"] <- gc; g }
 slope <- bfe["food_infl"] + 2 * bfe["food_infl2"] * fp_med + bfe["fp_Gc"] * gc_grid2
 se_m  <- sapply(gc_grid2, function(gc) { g <- gvec(gc); sqrt(as.numeric(t(g) %*% Vm %*% g)) })
 se_c  <- sapply(gc_grid2, function(gc) { g <- gvec(gc); sqrt(as.numeric(t(g) %*% Vc %*% g)) })
@@ -1110,5 +1113,9 @@ key_objects <- c("M1", "M2", "M3", "M2_ss", "M3_ss", "M2_fe", "M2_ppml", "M_glmn
 key_objects <- key_objects[sapply(key_objects, exists)]
 save(list = key_objects, file = file.path(OUTDIR, "ssa_workspace.RData"))
 cat("saved objects:", paste(key_objects, collapse = ", "), "\n")
+
+cat("\n===== PACKAGE CITATIONS =====\n")
+print(citation("rnaturalearth"))
+print(citation("sf"))
 
 cat("\n===== DONE =====\n")
