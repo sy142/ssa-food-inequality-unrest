@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software or data, please cite it as below."
+title: "Does income inequality moderate the effect of food price inflation on social unrest in Sub-Saharan Africa? — Replication materials"
+authors:
+  - family-names: "Yılmaz"
+    given-names: "Salim"
+    orcid: "https://orcid.org/0000-0003-2405-5084"
+version: 1.0.0
+date-released: 2026-06-30
+license: MIT
